@@ -24,8 +24,10 @@ require('lazy').setup({
   -- include a plugin definition from file lua/path/name.lua
 
   require 'kickstart/plugins/gitsigns',
+  require 'kickstart/plugins/fugutive',
+  -- require 'kickstart/plugins/undotree',
 
-  require 'kickstart/plugins/which-key',
+  -- require 'kickstart/plugins/which-key',
 
   require 'kickstart/plugins/telescope',
 
@@ -35,13 +37,20 @@ require('lazy').setup({
 
   require 'kickstart/plugins/blink-cmp',
 
+  --- Themes
   require 'kickstart/plugins/tokyonight',
+  require 'kickstart/plugins/catppuccin',
+  require 'kickstart/plugins/rosepine',
+  require 'kickstart/plugins/github-theme',
 
   require 'kickstart/plugins/todo-comments',
 
   require 'kickstart/plugins/mini',
 
   require 'kickstart/plugins/treesitter',
+
+  -- Typescript
+  require 'kickstart/plugins/typescript-tools',
 
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
@@ -55,7 +64,8 @@ require('lazy').setup({
   -- require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
+  require 'kickstart.plugins.autopairs',
+  require 'kickstart.plugins.oil',
   -- require 'kickstart.plugins.neo-tree',
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`

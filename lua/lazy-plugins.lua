@@ -39,8 +39,8 @@ require('lazy').setup({
   require 'kickstart/plugins/blink-cmp',
 
   --- Themes
-  -- require 'kickstart/plugins/tokyonight',
-  require 'kickstart/plugins/catppuccin',
+  require 'kickstart/plugins/tokyonight',
+  -- require 'kickstart/plugins/catppuccin',
   -- require 'kickstart/plugins/rosepine',
   -- require 'kickstart/plugins/github-theme',
 
@@ -48,7 +48,11 @@ require('lazy').setup({
 
   require 'kickstart/plugins/mini',
 
+  require 'kickstart/plugins/smart-open',
+
   require 'kickstart/plugins/treesitter',
+
+  require 'kickstart/plugins/kulala',
 
   -- Typescript
   require 'kickstart/plugins/typescript-tools',

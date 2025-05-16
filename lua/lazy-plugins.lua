@@ -25,7 +25,8 @@ require('lazy').setup({
 
   require 'kickstart/plugins/gitsigns',
   require 'kickstart/plugins/fugutive',
-  -- require 'kickstart/plugins/undotree',
+  require 'kickstart/plugins/undotree',
+  require 'kickstart/plugins/harpoon',
 
   -- require 'kickstart/plugins/which-key',
 
@@ -38,10 +39,10 @@ require('lazy').setup({
   require 'kickstart/plugins/blink-cmp',
 
   --- Themes
-  require 'kickstart/plugins/tokyonight',
+  -- require 'kickstart/plugins/tokyonight',
   require 'kickstart/plugins/catppuccin',
-  require 'kickstart/plugins/rosepine',
-  require 'kickstart/plugins/github-theme',
+  -- require 'kickstart/plugins/rosepine',
+  -- require 'kickstart/plugins/github-theme',
 
   require 'kickstart/plugins/todo-comments',
 
@@ -66,6 +67,7 @@ require('lazy').setup({
   -- require 'kickstart.plugins.lint',
   require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.oil',
+  require 'kickstart.plugins.copilot',
   -- require 'kickstart.plugins.neo-tree',
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`

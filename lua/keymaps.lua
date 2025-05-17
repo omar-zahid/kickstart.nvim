@@ -56,3 +56,9 @@ vim.keymap.set('n', '<leader>w', '<C-w>', { silent = true })
 -- Github copilot
 vim.keymap.set('n', '<leader>cc', ':Copilot enable<CR>', { desc = 'Enable Github Copilot' })
 vim.keymap.set('n', '<leader>cd', ':Copilot disable<CR>', { desc = 'Disable Github Copilot' })
+
+-- Clear command line after pressing escape.
+-- Especially useful when just finished searching for a word or just want to clear output
+vim.keymap.set('n', '<Esc>', '<cmd>echo<CR>', { silent = true })
+
+--

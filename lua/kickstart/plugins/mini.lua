@@ -32,6 +32,24 @@ return {
         return '%2l:%-2v'
       end
 
+      -- Filename toggle logic
+      _G.show_full_path = false
+
+      function _G.get_filename_status()
+        return _G.show_full_path and '%f' or '%t'
+      end
+
+      ---@diagnostic disable-next-line: duplicate-set-field
+      statusline.section_filename = function()
+        return '%{%v:lua.get_filename_status()%}'
+      end
+
+      -- Keymap to toggle filename display in statusline
+      vim.keymap.set('n', '<leader>fp', function()
+        _G.show_full_path = not _G.show_full_path
+        vim.cmd 'redrawstatus'
+      end, { desc = 'Toggle full path in statusline' })
+
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,

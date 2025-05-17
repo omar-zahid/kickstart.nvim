@@ -28,7 +28,7 @@ require('lazy').setup({
   require 'kickstart/plugins/undotree',
   require 'kickstart/plugins/harpoon',
 
-  -- require 'kickstart/plugins/which-key',
+  require 'kickstart/plugins/which-key',
 
   require 'kickstart/plugins/telescope',
 

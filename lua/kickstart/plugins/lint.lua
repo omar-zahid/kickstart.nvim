@@ -61,5 +61,22 @@ return {
         end,
       })
     end,
+
+    -- set keymap to run eslint_d --fix on current buffer if its of type javascript or typescript or react
+    vim.keymap.set('n', '<leader>ef', function()
+      local ft = vim.bo.filetype
+      local allowed = {
+        javascript = true,
+        typescript = true,
+        javascriptreact = true,
+        typescriptreact = true,
+      }
+      if allowed[ft] then
+        vim.cmd('silent! !eslint_d --fix ' .. vim.fn.expand '%:p')
+        vim.cmd 'edit!'
+      else
+        vim.notify('eslint_d fix not applicable for filetype: ' .. ft, vim.log.levels.WARN)
+      end
+    end, { desc = 'Run eslint_d --fix on current file' }),
   },
 }

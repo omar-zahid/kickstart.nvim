@@ -2,7 +2,6 @@ return {
   {
     'github/copilot.vim',
     lazy = true,
-    event = 'InsertEnter',
     cmd = { 'Copilot', 'Copilot panel', 'Copilot setup', 'Copilot status' },
     config = function()
       vim.keymap.set('n', '<leader>cp', ':Copilot panel<CR>', { desc = 'Copilot Panel' })

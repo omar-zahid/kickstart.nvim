@@ -44,6 +44,35 @@ return {
         return '%{%v:lua.get_filename_status()%}'
       end
 
+      -- Git branch name shortening logic
+      -- For example, linear branch names starts with 'feature/' followed by
+      -- ticket number and hyphen, e.g. 'feature/1234-branch-name'
+      local function shorten_git_branch(branch)
+        local slash_position = string.find(branch, '/')
+        if slash_position then
+          local after_slash = string.sub(branch, slash_position + 1)
+          local hyphen_position = string.find(after_slash, '-')
+          if hyphen_position then
+            local second_hyphen_position = string.find(after_slash, '-', hyphen_position + 1)
+            if second_hyphen_position then
+              local ticket_number = string.sub(after_slash, 1, second_hyphen_position - 1)
+              local before_slash = string.sub(branch, 1, slash_position - 1)
+              return before_slash .. '/' .. ticket_number
+            end
+          end
+        end
+        return branch
+      end
+
+      ---@diagnostic disable-next-line: duplicate-set-field
+      statusline.section_git = function()
+        local branch = vim.b.gitsigns_head
+        if branch then
+          return shorten_git_branch(branch)
+        end
+        return branch
+      end
+
       -- Keymap to toggle filename display in statusline
       vim.keymap.set('n', '<leader>fp', function()
         _G.show_full_path = not _G.show_full_path

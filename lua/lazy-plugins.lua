@@ -39,10 +39,10 @@ require('lazy').setup({
   require 'kickstart/plugins/blink-cmp',
 
   --- Themes
-  require 'kickstart/plugins/tokyonight',
+  -- require 'kickstart/plugins/tokyonight',
   require 'kickstart/plugins/catppuccin',
-  require 'kickstart/plugins/rosepine',
-  require 'kickstart/plugins/github-theme',
+  -- require 'kickstart/plugins/rosepine',
+  -- require 'kickstart/plugins/github-theme',
 
   require 'kickstart/plugins/todo-comments',
 

@@ -42,15 +42,15 @@ return {
             ['ic'] = '@class.inner',
           },
         },
-        swap = {
-          enable = true,
-          swap_next = {
-            ['<leader>j'] = '@parameter.inner',
-          },
-          swap_previous = {
-            ['<leader>k'] = '@parameter.inner',
-          },
-        },
+        -- swap = {
+        --   enable = true,
+        --   swap_next = {
+        --     ['<leader>j'] = '@parameter.inner',
+        --   },
+        --   swap_previous = {
+        --     ['<leader>k'] = '@parameter.inner',
+        --   },
+        -- },
       },
     },
     -- There are additional nvim-treesitter modules that you can use to interact

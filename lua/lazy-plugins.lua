@@ -52,6 +52,8 @@ require('lazy').setup({
 
   require 'kickstart/plugins/treesitter',
 
+  require 'kickstart.plugins.treewalker',
+
   require 'kickstart/plugins/kulala',
 
   -- Typescript

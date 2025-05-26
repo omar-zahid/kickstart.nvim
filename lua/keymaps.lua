@@ -13,11 +13,11 @@ vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Open float
 --  Try it with `yap` in normal mode
 --  See `:help vim.hl.on_yank()`
 vim.api.nvim_create_autocmd('TextYankPost', {
-  desc = 'Highlight when yanking (copying) text',
-  group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
-  callback = function()
-    vim.hl.on_yank()
-  end,
+    desc = 'Highlight when yanking (copying) text',
+    group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
+    callback = function()
+        vim.hl.on_yank()
+    end,
 })
 
 vim.keymap.set('n', '<leader>fw', ':w<CR>', { desc = 'Save file' })
@@ -53,12 +53,6 @@ vim.keymap.set('n', '<leader>x', '<cmd>!chmod +x %<CR>', { silent = true })
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 vim.keymap.set('n', '<leader>w', '<C-w>', { silent = true })
 
--- Github copilot
-vim.keymap.set('n', '<leader>cc', ':Copilot enable<CR>', { desc = 'Enable Github Copilot' })
-vim.keymap.set('n', '<leader>cd', ':Copilot disable<CR>', { desc = 'Disable Github Copilot' })
-
 -- Clear command line after pressing escape.
 -- Especially useful when just finished searching for a word or just want to clear output
 vim.keymap.set('n', '<Esc>', '<cmd>echo<CR>', { silent = true })
-
---

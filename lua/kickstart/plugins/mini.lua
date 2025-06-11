@@ -47,9 +47,13 @@ return {
       -- Git branch name shortening logic
       -- For example, linear branch names starts with 'feature/' followed by
       -- ticket number and hyphen, e.g. 'feature/1234-branch-name'
+      -- Added support for ACCOR-1234
 
       local function shorten_git_branch(branch)
         local short = branch:match '^([^/]+/[^-]+%-[^-]+)'
+        if short then return short end
+
+        short = branch:match('^([A-Z]+%-%d+)')
         return short or branch
       end
 

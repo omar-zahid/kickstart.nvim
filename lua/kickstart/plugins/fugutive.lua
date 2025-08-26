@@ -1,38 +1,46 @@
 return {
-  {
-    'tpope/vim-fugitive',
-    config = function()
-      vim.keymap.set('n', '<leader>gs', vim.cmd.Git)
-      vim.keymap.set('n', 'gf', '<cmd>diffget //2<CR>')
-      vim.keymap.set('n', 'gj', '<cmd>diffget //3<CR>')
+    {
+        'tpope/vim-fugitive',
+        dependencies = { 'tpope/vim-rhubarb' }, -- <-- GitHub provider for :GBrowse
+        config = function()
+            vim.keymap.set('n', '<leader>gs', vim.cmd.Git)
+            vim.keymap.set('n', 'gf', '<cmd>diffget //2<CR>')
+            vim.keymap.set('n', 'gj', '<cmd>diffget //3<CR>')
 
-      local Omar_Fugutive = vim.api.nvim_create_augroup('Omar_Fugutive', {})
+            vim.keymap.set('n', 'gb', function()
+                vim.cmd('GBrowse')
+            end, { noremap = true, silent = true, desc = 'GBrowse: open in browser' })
 
-      local autocmd = vim.api.nvim_create_autocmd
-      autocmd('BufWinEnter', {
-        group = Omar_Fugutive,
-        pattern = '*',
-        callback = function()
-          if vim.bo.ft ~= 'fugitive' then
-            return
-          end
+            vim.keymap.set('v', 'gB', ':GBrowse<CR>',
+                { noremap = true, silent = true, desc = 'GBrowse: open anchored to selection' })
 
-          local bufnr = vim.api.nvim_get_current_buf()
-          local opts = { buffer = bufnr, remap = false }
-          vim.keymap.set('n', '<leader>p', function()
-            vim.cmd.Git 'push'
-          end, opts)
+            local Omar_Fugutive = vim.api.nvim_create_augroup('Omar_Fugutive', {})
 
-          -- rebase always
-          vim.keymap.set('n', '<leader>P', function()
-            vim.cmd.Git 'pull --rebase'
-          end, opts)
+            local autocmd = vim.api.nvim_create_autocmd
+            autocmd('BufWinEnter', {
+                group = Omar_Fugutive,
+                pattern = '*',
+                callback = function()
+                    if vim.bo.ft ~= 'fugitive' then
+                        return
+                    end
 
-          -- NOTE: It allows me to easily set the branch i am pushing and any tracking
-          -- needed if i did not set the branch up correctly
-          vim.keymap.set('n', '<leader>t', ':Git push -u origin ', opts)
+                    local bufnr = vim.api.nvim_get_current_buf()
+                    local opts = { buffer = bufnr, remap = false }
+                    vim.keymap.set('n', '<leader>p', function()
+                        vim.cmd.Git 'push'
+                    end, opts)
+
+                    -- rebase always
+                    vim.keymap.set('n', '<leader>P', function()
+                        vim.cmd.Git 'pull --rebase'
+                    end, opts)
+
+                    -- NOTE: It allows me to easily set the branch i am pushing and any tracking
+                    -- needed if i did not set the branch up correctly
+                    vim.keymap.set('n', '<leader>t', ':Git push -u origin ', opts)
+                end,
+            })
         end,
-      })
-    end,
-  },
+    },
 }

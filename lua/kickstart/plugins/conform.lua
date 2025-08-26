@@ -44,6 +44,7 @@ return {
         json = { 'prettierd', 'prettier', stop_after_first = true },
         scss = { 'prettierd', 'prettier', stop_after_first = true },
         css = { 'prettierd', 'prettier', stop_after_first = true },
+        terraform = { 'terraform_fmt' },
       },
     },
   },

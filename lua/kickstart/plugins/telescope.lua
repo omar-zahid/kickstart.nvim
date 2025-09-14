@@ -27,7 +27,7 @@ return {
       { 'nvim-telescope/telescope-ui-select.nvim' },
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
-      { 'nvim-tree/nvim-web-devicons',            enabled = vim.g.have_nerd_font },
+      { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -88,7 +88,10 @@ return {
       -- Replacing below with smartopen
       -- vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
       vim.keymap.set('n', '<leader><leader>', function()
-        require('telescope').extensions.smart_open.smart_open()
+        require('telescope').extensions.smart_open.smart_open {
+          cwd_only = true,
+          filename_first = false,
+        }
       end, { noremap = true, silent = true })
 
       -- Slightly advanced example of overriding default behavior and theme

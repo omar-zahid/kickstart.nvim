@@ -48,15 +48,75 @@ return {
 
       -- Create autocommand which carries out the actual linting
       -- on the specified events.
+      -- helper: does this buffer have an ESLint config somewhere up the tree?
+      local function has_eslint_config(start_from)
+        local found = vim.fs.find({
+          -- Flat config (ESLint v9+)
+          'eslint.config.js',
+          'eslint.config.mjs',
+          'eslint.config.cjs',
+          'eslint.config.ts',
+          'eslint.config.json',
+          'eslint.config.yaml',
+          'eslint.config.yml',
+          -- Legacy config
+          '.eslintrc',
+          '.eslintrc.js',
+          '.eslintrc.cjs',
+          '.eslintrc.json',
+          '.eslintrc.yaml',
+          '.eslintrc.yml',
+          -- package.json (only if it actually contains "eslintConfig")
+          'package.json',
+        }, { path = start_from or vim.api.nvim_buf_get_name(0), upward = true })[1]
+
+        if not found then
+          return false
+        end
+        if found:sub(-12) ~= 'package.json' then
+          return true
+        end
+
+        -- Only treat package.json as config if it has "eslintConfig"
+        local ok, pkg = pcall(vim.fn.json_decode, table.concat(vim.fn.readfile(found), '\n'))
+        return ok and type(pkg) == 'table' and pkg.eslintConfig ~= nil
+      end
+
       local lint_augroup = vim.api.nvim_create_augroup('lint', { clear = true })
-      vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
+      vim.api.nvim_create_autocmd({ 'BufWritePost', 'InsertLeave', 'BufEnter' }, {
         group = lint_augroup,
         callback = function()
-          -- Only run the linter in buffers that you can modify in order to
-          -- avoid superfluous noise, notably within the handy LSP pop-ups that
-          -- describe the hovered symbol using Markdown.
-          if vim.bo.modifiable then
-            lint.try_lint()
+          if not vim.bo.modifiable then
+            return
+          end
+
+          local ft = vim.bo.filetype
+          local configured = lint.linters_by_ft[ft] or {}
+
+          -- Filter out eslint_d if there's no config
+          local to_run = {}
+          for _, name in ipairs(configured) do
+            if name == 'eslint_d' then
+              if has_eslint_config(vim.api.nvim_buf_get_name(0)) then
+                table.insert(to_run, name)
+              end
+            else
+              table.insert(to_run, name)
+            end
+          end
+
+          if #to_run == 0 then
+            return
+          end
+
+          -- nvim-lint's try_lint takes one linter name (string), so run each
+          for _, name in ipairs(to_run) do
+            -- ignore parse/exec errors from any single linter to avoid noisy notifies
+            local ok = pcall(lint.try_lint, name, { ignore_errors = true })
+            if not ok then
+              -- silently skip; comment in the next line if you want visibility:
+              vim.notify('lint: failed to run ' .. name, vim.log.levels.DEBUG)
+            end
           end
         end,
       })

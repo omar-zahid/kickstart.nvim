@@ -11,7 +11,7 @@ return {
                 vim.cmd('GBrowse')
             end, { noremap = true, silent = true, desc = 'GBrowse: open in browser' })
 
-            vim.keymap.set('v', 'gB', ':GBrowse<CR>',
+            vim.keymap.set('v', 'gb', ':GBrowse<CR>',
                 { noremap = true, silent = true, desc = 'GBrowse: open anchored to selection' })
 
             local Omar_Fugutive = vim.api.nvim_create_augroup('Omar_Fugutive', {})

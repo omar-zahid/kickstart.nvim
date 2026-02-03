@@ -89,3 +89,16 @@ vim.o.confirm = false
 vim.o.shortmess = 'filnxtToOFc'
 
 -- vim: ts=2 sts=2 sw=2 et
+--
+-- OSC52 clipboard over SSH
+vim.g.clipboard = {
+  name = 'osc52',
+  copy = {
+    ['+'] = require('vim.ui.clipboard.osc52').copy '+',
+    ['*'] = require('vim.ui.clipboard.osc52').copy '*',
+  },
+  paste = {
+    ['+'] = require('vim.ui.clipboard.osc52').paste '+',
+    ['*'] = require('vim.ui.clipboard.osc52').paste '*',
+  },
+}

@@ -39,8 +39,8 @@ require('lazy').setup({
   require 'kickstart/plugins/blink-cmp',
 
   --- Themes
-  require 'kickstart/plugins/catppuccin',
   require 'kickstart/plugins/tokyonight',
+  -- require 'kickstart/plugins/catppuccin',
   -- require 'kickstart/plugins/rosepine',
   -- require 'kickstart/plugins/github-theme',
 
@@ -73,6 +73,7 @@ require('lazy').setup({
   require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.oil',
   require 'kickstart.plugins.copilot',
+  require 'kickstart.plugins.cloak',
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.

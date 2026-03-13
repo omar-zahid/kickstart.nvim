@@ -222,9 +222,6 @@ return {
         -- ts_ls = {},
         vtsls = {},
         --
-        eslint_d = {},
-        prettierd = {},
-
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
@@ -235,7 +232,7 @@ return {
                 callSnippet = 'Replace',
               },
               -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-              -- diagnostics = { disable = { 'missing-fields' } },
+              diagnostics = { globals = { 'vim' } },
             },
           },
         },
@@ -255,7 +252,10 @@ return {
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.
       local ensure_installed = vim.tbl_keys(servers or {})
-      vim.list_extend(ensure_installed, {})
+      vim.list_extend(ensure_installed, {
+        "eslint_d",
+        "prettierd"
+      })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       require('mason-lspconfig').setup {

@@ -92,21 +92,21 @@ vim.o.shortmess = 'filnxtToOFc'
 --
 -- // Enable below on ssh servers
 -- OSC52 clipboard over SSH
--- local function paste()
---     return {
---         vim.fn.split(vim.fn.getreg(""), "\n"),
---         vim.fn.getregtype(""),
---     }
--- end
---
--- vim.g.clipboard = {
---     name = 'osc52',
---     copy = {
---         ['+'] = require('vim.ui.clipboard.osc52').copy '+',
---         ['*'] = require('vim.ui.clipboard.osc52').copy '*',
---     },
---     paste = {
---         ['+'] = paste,
---         ['*'] = paste,
---     },
--- }
+local function paste()
+    return {
+        vim.fn.split(vim.fn.getreg(""), "\n"),
+        vim.fn.getregtype(""),
+    }
+end
+
+vim.g.clipboard = {
+    name = 'osc52',
+    copy = {
+        ['+'] = require('vim.ui.clipboard.osc52').copy '+',
+        ['*'] = require('vim.ui.clipboard.osc52').copy '*',
+    },
+    paste = {
+        ['+'] = paste,
+        ['*'] = paste,
+    },
+}

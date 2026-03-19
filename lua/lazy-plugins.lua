@@ -19,7 +19,6 @@ require('lazy').setup({
   --
   -- Use `opts = {}` to automatically pass options to a plugin's `setup()` function, forcing the plugin to be loaded.
   --
-
   -- modular approach: using `require 'path/name'` will
   -- include a plugin definition from file lua/path/name.lua
 
@@ -39,10 +38,12 @@ require('lazy').setup({
   require 'kickstart/plugins/blink-cmp',
 
   --- Themes
-  require 'kickstart/plugins/tokyonight',
+  -- require 'kickstart/plugins/tokyonight',
   -- require 'kickstart/plugins/catppuccin',
-  -- require 'kickstart/plugins/rosepine',
+  require 'kickstart/plugins/rosepine',
+  -- require 'kickstart/plugins/vague',
   -- require 'kickstart/plugins/github-theme',
+  -- require 'kickstart/plugins/kanagawa',
 
   require 'kickstart/plugins/todo-comments',
 

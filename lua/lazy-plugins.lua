@@ -74,7 +74,9 @@ require('lazy').setup({
   require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.oil',
   require 'kickstart.plugins.quicker',
-  require 'kickstart.plugins.copilot',
+  -- require 'kickstart.plugins.copilot',
+  require 'kickstart.plugins.windsurf',
+
   require 'kickstart.plugins.cloak',
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`

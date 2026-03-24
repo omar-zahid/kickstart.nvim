@@ -73,6 +73,7 @@ require('lazy').setup({
   require 'kickstart.plugins.lint',
   require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.oil',
+  require 'kickstart.plugins.quicker',
   require 'kickstart.plugins.copilot',
   require 'kickstart.plugins.cloak',
 

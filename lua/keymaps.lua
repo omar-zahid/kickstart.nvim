@@ -58,3 +58,29 @@ vim.keymap.set('n', '<leader>w', '<C-w>', { silent = true })
 -- Clear command line after pressing escape.
 -- Especially useful when just finished searching for a word or just want to clear output
 vim.keymap.set('n', '<Esc>', '<cmd>echo<CR>', { silent = true })
+
+-- Incremental selection
+-- 1. Initialize and Increment Selection with Ctrl+G
+vim.keymap.set({ "n", "x" }, "<C-g>", function()
+    -- If starting from Normal mode, switch to Visual mode first
+    if vim.api.nvim_get_mode().mode ~= "v" then
+        vim.cmd("normal! v")
+    end
+
+    -- Smart Node Selection: Try Treesitter first, fallback to LSP
+    if vim.treesitter.get_parser(nil, nil, { error = false }) then
+        require("vim.treesitter._select").select_parent(vim.v.count1)
+    else
+        vim.lsp.buf.selection_range("outer")
+    end
+end, { desc = "Smart increment Treesitter node or LSP outer selection" })
+
+-- 2. Decrement Selection with Ctrl+H (Visual mode only)
+vim.keymap.set("x", "<C-h>", function()
+    -- Smart Node Shrinking: Try Treesitter first, fallback to LSP
+    if vim.treesitter.get_parser(nil, nil, { error = false }) then
+        require("vim.treesitter._select").select_child(vim.v.count1)
+    else
+        vim.lsp.buf.selection_range("inner")
+    end
+end, { desc = "Smart decrement Treesitter node or LSP inner selection" })

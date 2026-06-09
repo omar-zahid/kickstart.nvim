@@ -48,6 +48,7 @@ return {
         terraform = { 'terraform_fmt' },
         yaml = { 'prettierd', 'prettier', stop_after_first = true },
         yml = { 'prettierd', 'prettier', stop_after_first = true },
+        markdown = { 'prettierd', 'prettier', stop_after_first = true },
       },
     },
   },

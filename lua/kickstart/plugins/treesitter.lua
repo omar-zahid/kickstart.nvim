@@ -43,6 +43,7 @@ return {
             ['ic'] = '@class.inner',
           },
         },
+        -- // I'm using treewalker instead
         -- swap = {
         --   enable = true,
         --   swap_next = {

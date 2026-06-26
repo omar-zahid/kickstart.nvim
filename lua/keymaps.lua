@@ -71,7 +71,7 @@ vim.keymap.set({ "n", "x" }, "<C-g>", function()
     if vim.treesitter.get_parser(nil, nil, { error = false }) then
         require("vim.treesitter._select").select_parent(vim.v.count1)
     else
-        vim.lsp.buf.selection_range("outer")
+        vim.lsp.buf.selection_range(vim.v.count1)
     end
 end, { desc = "Smart increment Treesitter node or LSP outer selection" })
 
@@ -81,6 +81,6 @@ vim.keymap.set("x", "<C-h>", function()
     if vim.treesitter.get_parser(nil, nil, { error = false }) then
         require("vim.treesitter._select").select_child(vim.v.count1)
     else
-        vim.lsp.buf.selection_range("inner")
+        vim.lsp.buf.selection_range(-vim.v.count)
     end
 end, { desc = "Smart decrement Treesitter node or LSP inner selection" })

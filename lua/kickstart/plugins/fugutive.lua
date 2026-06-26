@@ -1,11 +1,17 @@
 return {
     {
         'tpope/vim-fugitive',
-        dependencies = { 'tpope/vim-rhubarb' }, -- <-- GitHub provider for :GBrowse
+        dependencies = { 'tpope/vim-rhubarb', 'shumphrey/fugitive-gitlab.vim' }, -- <-- GitHub provider for :GBrowse
         config = function()
             vim.keymap.set('n', '<leader>gs', vim.cmd.Git)
             vim.keymap.set('n', 'gf', '<cmd>diffget //2<CR>')
             vim.keymap.set('n', 'gj', '<cmd>diffget //3<CR>')
+
+            -- Endava GitLab mapping
+            vim.g.fugitive_gitlab_domains = {
+                ["gitlab-ssh.endava.com"] = "https://gitlab.endava.com",
+            }
+            ---
 
             vim.keymap.set('n', 'gb', function()
                 vim.cmd('GBrowse')

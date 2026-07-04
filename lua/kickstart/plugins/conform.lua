@@ -13,6 +13,14 @@ return {
         desc = '[F]ormat buffer',
       },
     },
+    init = function()
+      vim.api.nvim_create_autocmd('VimLeavePre', {
+        group = vim.api.nvim_create_augroup('PrettierdCleanup', { clear = true }),
+        callback = function()
+          vim.fn.jobstart({ 'prettierd', 'stop' }, { detach = true })
+        end,
+      })
+    end,
     opts = {
       notify_on_error = true,
       format_on_save = function(bufnr)

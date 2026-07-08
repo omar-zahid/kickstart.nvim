@@ -6,9 +6,15 @@ return {
     ---@type asciidoc-preview.Config
     keys = {
         {
-            '<Leader>cp',
+            '<Leader>ap',
             '<cmd>AsciiDocPreview<CR>',
-            desc = 'Preview AsciiDoc document',
+            desc = '[A]sciiDoc [P]review',
+            silent = true,
+        },
+        {
+            '<Leader>as',
+            '<cmd>AsciiDocPreviewStop<CR>',
+            desc = '[A]sciiDoc [S]top preview',
             silent = true,
         },
     },

@@ -57,6 +57,7 @@ return {
         --
         defaults = {
           layout_strategy = 'horizontal',
+          path_display = { 'filename_first' },
           -- mappings = {
           --   i = { ['<c-enter>'] = 'to_fuzzy_refine' },
           -- },
@@ -90,7 +91,7 @@ return {
       vim.keymap.set('n', '<leader><leader>', function()
         require('telescope').extensions.smart_open.smart_open {
           cwd_only = true,
-          filename_first = false,
+          filename_first = true,
         }
       end, { noremap = true, silent = true })
 

@@ -2,6 +2,12 @@ return {
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
     config = function()
+      -- Icons (replaces nvim-web-devicons for telescope, oil, etc.)
+      -- mock_nvim_web_devicons() makes any plugin that calls nvim-web-devicons
+      -- route through mini.icons instead, so they keep working without the dep.
+      require('mini.icons').setup {}
+      require('mini.icons').mock_nvim_web_devicons()
+
       -- Better Around/Inside textobjects
       --
       -- Examples:

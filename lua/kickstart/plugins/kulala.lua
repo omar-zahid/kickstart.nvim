@@ -26,6 +26,14 @@ return {
         end,
         ft = { 'http', 'rest' }, -- sets mapping for specified file types
       },
+      ['Copy request as cURL'] = {
+        '<leader>rc',
+        function()
+          require('kulala').copy()
+        end,
+        ft = { 'http', 'rest' }, -- sets mapping for specified file types
+        desc = 'Copy request as cURL',
+      },
       ['Find request'] = false, -- set to false to disable
     },
   },

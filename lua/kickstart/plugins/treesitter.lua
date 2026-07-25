@@ -1,56 +1,142 @@
+-- nvim-treesitter `main` branch (Neovim 0.12+).
+--
+-- This branch is a full rewrite: `setup()` only accepts `install_dir`. Parsers
+-- are installed with `install()`, and the features themselves come from Neovim
+-- and are opt-in per filetype, so highlighting, indentation and folding are
+-- enabled from a FileType autocommand below.
+local parsers = {
+  -- Web
+  'css',
+  'graphql',
+  'html',
+  'javascript',
+  'jsdoc',
+  'json',
+  'json5',
+  'scss',
+  'tsx',
+  'typescript',
+  -- Config and docs
+  'bash',
+  'diff',
+  'dockerfile',
+  'gitcommit',
+  'git_rebase',
+  'gitignore',
+  'lua',
+  'luadoc',
+  'markdown',
+  'markdown_inline',
+  'query',
+  'regex',
+  'toml',
+  'vim',
+  'vimdoc',
+  'yaml',
+  -- Other languages in use
+  'c',
+  'rust',
+}
+
+--- Filetypes that should get treesitter highlighting and indentation.
+--- Several filetypes map onto one parser, so this is not the parser list.
+local filetypes = {
+  'bash',
+  'c',
+  'css',
+  'diff',
+  'dockerfile',
+  'gitcommit',
+  'gitignore',
+  'gitrebase',
+  'graphql',
+  'html',
+  'javascript',
+  'javascriptreact',
+  'json',
+  'json5',
+  'jsonc',
+  'lua',
+  'markdown',
+  'query',
+  'rust',
+  'scss',
+  'sh',
+  'toml',
+  'typescript',
+  'typescriptreact',
+  'vim',
+  'yaml',
+}
+
 return {
-  { -- Highlight, edit, and navigate code
+  {
     'nvim-treesitter/nvim-treesitter',
+    -- This branch does not support lazy-loading.
+    lazy = false,
+    branch = 'main',
     build = ':TSUpdate',
-    dependencies = {
-      'nvim-treesitter/nvim-treesitter-textobjects',
+    config = function()
+      require('nvim-treesitter').setup()
+
+      -- No-op for parsers that are already present.
+      require('nvim-treesitter').install(parsers)
+
+      vim.api.nvim_create_autocmd('FileType', {
+        group = vim.api.nvim_create_augroup('kickstart-treesitter', { clear = true }),
+        pattern = filetypes,
+        callback = function(event)
+          -- Highlighting is provided by Neovim itself.
+          pcall(vim.treesitter.start, event.buf)
+
+          -- NOTE: treesitter folding is intentionally not enabled. Setting
+          -- 'foldmethod' to expr closes every fold when a file opens, and
+          -- operators like `gcc` then act on the whole closed fold instead of
+          -- the current line. See `:h vim.treesitter.foldexpr()` if you ever
+          -- want folds; it needs 'foldlevel' raised to stay open.
+
+          -- Treesitter indentation is still experimental upstream.
+          vim.bo[event.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+        end,
+      })
+    end,
+  },
+  {
+    'nvim-treesitter/nvim-treesitter-textobjects',
+    branch = 'main',
+    dependencies = { 'nvim-treesitter/nvim-treesitter' },
+    keys = {
+      -- Same objects as before: parameters, functions and classes.
+      { 'aa', desc = 'Select outer parameter', mode = { 'x', 'o' } },
+      { 'ia', desc = 'Select inner parameter', mode = { 'x', 'o' } },
+      { 'af', desc = 'Select outer function', mode = { 'x', 'o' } },
+      { 'if', desc = 'Select inner function', mode = { 'x', 'o' } },
+      { 'ac', desc = 'Select outer class', mode = { 'x', 'o' } },
+      { 'ic', desc = 'Select inner class', mode = { 'x', 'o' } },
     },
-    main = 'nvim-treesitter.config', -- Sets main module to use for opts
-    -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
-    opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'javascript', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'tsx', 'typescript', 'vim', 'vimdoc' },
-      -- Autoinstall languages that are not installed
-      auto_install = true,
-      highlight = {
-        enable = true,
-        -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
-        --  If you are experiencing weird indenting issues, add the language to
-        --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-        additional_vim_regex_highlighting = { 'ruby' },
-      },
-      indent = { enable = true, disable = { 'ruby' } },
-      textobjects = {
+    config = function()
+      require('nvim-treesitter-textobjects').setup {
         select = {
-          enable = true,
-          lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
-          keymaps = {
-            -- You can use the capture groups defined in textobjects.scm
-            ['aa'] = '@parameter.outer',
-            ['ia'] = '@parameter.inner',
-            ['af'] = '@function.outer',
-            ['if'] = '@function.inner',
-            ['ac'] = '@class.outer',
-            ['ic'] = '@class.inner',
-          },
+          -- Jump forward to the text object, similar to targets.vim.
+          lookahead = true,
         },
-        -- // I'm using treewalker instead
-        -- swap = {
-        --   enable = true,
-        --   swap_next = {
-        --     ['<leader>j'] = '@parameter.inner',
-        --   },
-        --   swap_previous = {
-        --     ['<leader>k'] = '@parameter.inner',
-        --   },
-        -- },
-      },
-    },
-    -- There are additional nvim-treesitter modules that you can use to interact
-    -- with nvim-treesitter. You should go explore a few and see what interests you:
-    --
-    --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
-    --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
-    --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+      }
+
+      local objects = {
+        aa = '@parameter.outer',
+        ia = '@parameter.inner',
+        af = '@function.outer',
+        ['if'] = '@function.inner',
+        ac = '@class.outer',
+        ic = '@class.inner',
+      }
+
+      for key, query in pairs(objects) do
+        vim.keymap.set({ 'x', 'o' }, key, function()
+          require('nvim-treesitter-textobjects.select').select_textobject(query, 'textobjects')
+        end, { desc = 'Select ' .. query })
+      end
+    end,
   },
 }
 -- vim: ts=2 sts=2 sw=2 et

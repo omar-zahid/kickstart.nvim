@@ -1,4 +1,13 @@
-local function web_formatters(bufnr)
+--- Formatting is chosen per project, never mixed:
+---   Oxc projects    -> oxfmt
+---   Legacy projects -> prettierd (falling back to a local prettier)
+---
+--- Oxfmt targets Prettier-compatible output but is not a universal drop-in
+--- (different default `printWidth`, no Prettier plugins), so legacy projects
+--- keep using their own Prettier.
+---@param bufnr integer
+---@return conform.FiletypeFormatter
+local function web(bufnr)
   if require('js-toolchain').formatter(vim.api.nvim_buf_get_name(bufnr)) == 'oxfmt' then
     return { 'oxfmt' }
   end
@@ -46,24 +55,22 @@ return {
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
-        -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
-        --
-        -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
-        javascript = web_formatters,
-        html = web_formatters,
-        typescript = web_formatters,
-        typescriptreact = web_formatters,
-        astro = { 'prettierd', 'prettier', stop_after_first = true },
-        json = web_formatters,
-        jsonc = web_formatters,
-        scss = web_formatters,
-        css = web_formatters,
         terraform = { 'terraform_fmt' },
-        yaml = web_formatters,
-        yml = web_formatters,
-        markdown = web_formatters,
+        -- Web filetypes resolve their formatter from the project.
+        css = web,
+        graphql = web,
+        html = web,
+        javascript = web,
+        javascriptreact = web,
+        json = web,
+        jsonc = web,
+        markdown = web,
+        scss = web,
+        typescript = web,
+        typescriptreact = web,
+        yaml = web,
+        -- Oxfmt does not support Astro, so always use Prettier there.
+        astro = { 'prettierd', 'prettier', stop_after_first = true },
       },
     },
   },

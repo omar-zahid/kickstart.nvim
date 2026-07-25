@@ -128,6 +128,15 @@ return {
           --
           -- When you move your cursor, the highlights will be cleared (the second autocommand).
           local client = vim.lsp.get_client_by_id(event.data.client_id)
+
+          -- Apply every auto-fixable lint problem in the buffer. Both linters
+          -- expose a fix-all command, so the keymap is identical for Oxc and
+          -- legacy ESLint projects.
+          local fixers = { oxlint = 'LspOxlintFixAll', eslint = 'LspEslintFixAll' }
+          if client and fixers[client.name] then
+            map('<leader>lf', '<cmd>' .. fixers[client.name] .. '<cr>', '[L]int [F]ix all')
+          end
+
           if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
             local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
             vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
@@ -213,24 +222,6 @@ return {
         -- gopls = {},
         -- pyright = {},
         rust_analyzer = {},
-        -- vtsls = {},
-        -- 1. Native configuration for TypeScript 7
-        tsc = {
-          cmd = { 'tsc', '--lsp', '--stdio' },
-          filetypes = { 'typescript', 'typescriptreact', 'typescript.tsx', 'javascript', 'javascriptreact' },
-          root_markers = { 'package.json', 'tsconfig.json', '.git' },
-        },
-
-        oxlint = {
-          cmd = { 'oxlint', '--lsp' },
-          filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
-          root_dir = function(bufnr, on_dir)
-            local linter, root = require('js-toolchain').linter(vim.api.nvim_buf_get_name(bufnr))
-            if linter == 'oxlint' then
-              on_dir(root)
-            end
-          end,
-        },
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
@@ -264,16 +255,49 @@ return {
       --
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.
-      local ensure_installed = vim.tbl_filter(function(server)
-        return server ~= 'tsc'
-      end, vim.tbl_keys(servers or {}))
-      vim.list_extend(ensure_installed, { 'oxfmt', 'eslint_d', 'prettierd' })
+      --  `tsc` is TypeScript 7 installed on the system, not through Mason.
+      local ensure_installed = vim.tbl_keys(servers or {})
+      vim.list_extend(ensure_installed, { 'oxlint', 'eslint-lsp', 'oxfmt', 'prettierd' })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
+
+      -- [[ Web toolchain ]]
+      --
+      -- Every JS/TS buffer gets exactly one type checker and at most one linter:
+      --
+      --   types  ->  tsc (TypeScript 7 native) or denols for Deno projects
+      --   lint   ->  oxlint (Oxc projects) or eslint (legacy projects)
+      --
+      -- `lsp/tsc.lua` and nvim-lspconfig's `denols` decline each other's
+      -- projects by comparing lockfile and `deno.json` depth, so they never
+      -- both attach. Oxlint and ESLint are separated by `js-toolchain`, which
+      -- picks whichever config file sits closest to the buffer.
+      --
+      -- These must be `vim.lsp.config()` calls rather than `lsp/*.lua` files:
+      -- runtime files merge in `runtimepath` order and nvim-lspconfig comes
+      -- after this config, so a local `lsp/eslint.lua` would lose to it.
+      local web_servers = { 'tsc', 'denols', 'oxlint', 'eslint' }
+
+      ---@param name 'oxlint'|'eslint'
+      local function only_when_selected(name)
+        return function(bufnr, on_dir)
+          local linter, root = require('js-toolchain').linter(vim.api.nvim_buf_get_name(bufnr))
+          if linter == name then
+            on_dir(root)
+          end
+        end
+      end
+
+      vim.lsp.config('oxlint', { root_dir = only_when_selected 'oxlint' })
+      vim.lsp.config('eslint', { root_dir = only_when_selected 'eslint' })
 
       for server_name, server in pairs(servers) do
         server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
         vim.lsp.config(server_name, server)
       end
+
+      -- Broadcast blink.cmp's extra capabilities to every server, including the
+      -- ones configured through `lsp/*.lua`.
+      vim.lsp.config('*', { capabilities = capabilities })
 
       require('mason-lspconfig').setup {
         ensure_installed = {},
@@ -281,7 +305,7 @@ return {
         automatic_installation = false,
       }
 
-      vim.lsp.enable(vim.tbl_keys(servers))
+      vim.lsp.enable(vim.list_extend(vim.tbl_keys(servers), web_servers))
     end,
   },
 }

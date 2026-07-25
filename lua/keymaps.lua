@@ -59,6 +59,9 @@ vim.keymap.set('n', '<leader>w', '<C-w>', { silent = true })
 -- Especially useful when just finished searching for a word or just want to clear output
 vim.keymap.set('n', '<Esc>', '<cmd>echo<CR>', { silent = true })
 
+-- Block commenting with `gcb`, alongside the built-in `gc`/`gcc`.
+require('block-comment').setup()
+
 -- Incremental selection
 -- 1. Initialize and Increment Selection with Ctrl+G
 vim.keymap.set({ "n", "x" }, "<C-g>", function()

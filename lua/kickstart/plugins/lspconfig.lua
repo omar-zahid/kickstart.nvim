@@ -275,7 +275,7 @@ return {
       -- These must be `vim.lsp.config()` calls rather than `lsp/*.lua` files:
       -- runtime files merge in `runtimepath` order and nvim-lspconfig comes
       -- after this config, so a local `lsp/eslint.lua` would lose to it.
-      local web_servers = { 'tsc', 'denols', 'oxlint', 'eslint' }
+      local web_servers = { 'tsc', 'denols', 'oxlint', 'eslint', 'oxfmt' }
 
       ---@param name 'oxlint'|'eslint'
       local function only_when_selected(name)
@@ -289,6 +289,18 @@ return {
 
       vim.lsp.config('oxlint', { root_dir = only_when_selected 'oxlint' })
       vim.lsp.config('eslint', { root_dir = only_when_selected 'eslint' })
+
+      -- Conform formats Oxc projects through this server instead of the `oxfmt`
+      -- CLI, which would otherwise re-parse `vite.config.ts` on every save.
+      -- Legacy projects use Prettier, so the server must not start there.
+      vim.lsp.config('oxfmt', {
+        root_dir = function(bufnr, on_dir)
+          local formatter, root = require('js-toolchain').formatter(vim.api.nvim_buf_get_name(bufnr))
+          if formatter == 'oxfmt' and root then
+            on_dir(root)
+          end
+        end,
+      })
 
       for server_name, server in pairs(servers) do
         server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})

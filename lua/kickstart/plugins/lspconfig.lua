@@ -24,7 +24,7 @@ return {
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Useful status updates for LSP.
-      { 'j-hui/fidget.nvim',    opts = {} },
+      { 'j-hui/fidget.nvim', opts = {} },
 
       -- Allows extra capabilities provided by blink.cmp
       'saghen/blink.cmp',
@@ -213,15 +213,24 @@ return {
         -- gopls = {},
         -- pyright = {},
         rust_analyzer = {},
-        -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
-        --
-        -- Some languages (like typescript) have entire language plugins that can be useful:
-        --    https://github.com/pmizio/typescript-tools.nvim
-        --
-        -- But for many setups, the LSP (`ts_ls`) will work just fine
-        -- ts_ls = {},
-        vtsls = {},
-        --
+        -- vtsls = {},
+        -- 1. Native configuration for TypeScript 7
+        tsc = {
+          cmd = { 'tsc', '--lsp', '--stdio' },
+          filetypes = { 'typescript', 'typescriptreact', 'typescript.tsx', 'javascript', 'javascriptreact' },
+          root_markers = { 'package.json', 'tsconfig.json', '.git' },
+        },
+
+        oxlint = {
+          cmd = { 'oxlint', '--lsp' },
+          filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
+          root_dir = function(bufnr, on_dir)
+            local linter, root = require('js-toolchain').linter(vim.api.nvim_buf_get_name(bufnr))
+            if linter == 'oxlint' then
+              on_dir(root)
+            end
+          end,
+        },
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
@@ -255,8 +264,10 @@ return {
       --
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.
-      local ensure_installed = vim.tbl_keys(servers or {})
-      vim.list_extend(ensure_installed, { 'eslint_d', 'prettierd' })
+      local ensure_installed = vim.tbl_filter(function(server)
+        return server ~= 'tsc'
+      end, vim.tbl_keys(servers or {}))
+      vim.list_extend(ensure_installed, { 'oxfmt', 'eslint_d', 'prettierd' })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       for server_name, server in pairs(servers) do
@@ -266,7 +277,7 @@ return {
 
       require('mason-lspconfig').setup {
         ensure_installed = {},
-        automatic_enable = true,
+        automatic_enable = false,
         automatic_installation = false,
       }
 

@@ -97,7 +97,8 @@ return {
           local to_run = {}
           for _, name in ipairs(configured) do
             if name == 'eslint_d' then
-              if has_eslint_config(vim.api.nvim_buf_get_name(0)) then
+              local path = vim.api.nvim_buf_get_name(0)
+              if require('js-toolchain').linter(path) == 'eslint_d' then
                 table.insert(to_run, name)
               end
             else
@@ -112,7 +113,8 @@ return {
           -- nvim-lint's try_lint takes one linter name (string), so run each
           for _, name in ipairs(to_run) do
             -- ignore parse/exec errors from any single linter to avoid noisy notifies
-            local ok = pcall(lint.try_lint, name, { ignore_errors = true })
+            local _, root = require('js-toolchain').linter(vim.api.nvim_buf_get_name(0))
+            local ok = pcall(lint.try_lint, name, { cwd = root, ignore_errors = true })
             if not ok then
               -- silently skip; comment in the next line if you want visibility:
               vim.notify('lint: failed to run ' .. name, vim.log.levels.DEBUG)
@@ -123,20 +125,33 @@ return {
     end,
 
     -- set keymap to run eslint_d --fix on current buffer if its of type javascript or typescript or react
-    vim.keymap.set('n', '<leader>ef', function()
-      local ft = vim.bo.filetype
-      local allowed = {
-        javascript = true,
-        typescript = true,
-        javascriptreact = true,
-        typescriptreact = true,
-      }
-      if allowed[ft] then
-        vim.cmd('silent! !eslint_d --fix ' .. vim.fn.expand '%:p')
-        vim.cmd 'edit!'
+    vim.keymap.set('n', '<leader>lf', function()
+      local bufnr = vim.api.nvim_get_current_buf()
+      local path = vim.api.nvim_buf_get_name(bufnr)
+      local linter, root = require('js-toolchain').linter(path)
+      if linter == 'oxlint' and vim.api.nvim_buf_get_commands(bufnr, {}).LspOxlintFixAll then
+        vim.cmd 'LspOxlintFixAll'
+      elseif linter == 'eslint_d' then
+        if vim.bo[bufnr].modified then
+          vim.cmd.write()
+        end
+        vim.system(
+          { 'eslint_d', '--fix', path },
+          { cwd = root, text = true },
+          vim.schedule_wrap(function(result)
+            if result.code ~= 0 then
+              vim.notify(result.stderr, vim.log.levels.ERROR)
+            elseif vim.api.nvim_buf_is_valid(bufnr) then
+              vim.api.nvim_buf_call(bufnr, function()
+                vim.cmd.checktime()
+                require('lint').try_lint('eslint_d', { cwd = root, ignore_errors = true })
+              end)
+            end
+          end)
+        )
       else
-        vim.notify('eslint_d fix not applicable for filetype: ' .. ft, vim.log.levels.WARN)
+        vim.notify('No Oxlint or ESLint fixer configured for this file', vim.log.levels.WARN)
       end
-    end, { desc = 'Run eslint_d --fix on current file' }),
+    end, { desc = 'Run the project linter fix on current file' }),
   },
 }

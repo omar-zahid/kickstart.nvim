@@ -106,15 +106,15 @@ function M.operator(mode)
 end
 
 function M.setup()
-  -- Current line in Normal mode (`_` is the linewise motion), selection in
-  -- Visual mode. Mirrors how Neovim maps `gcc` and `gc`.
+  -- Current line in Normal mode (`_` is the linewise motion), so `gcb` mirrors
+  -- `gcc` and takes a count: `3gcb` block comments three lines.
+  --
+  -- Deliberately not mapped in Visual mode: there, `gc` is a complete mapping,
+  -- so any `gc`-prefixed sibling would make Neovim wait 'timeoutlen' before
+  -- commenting the selection.
   vim.keymap.set('n', 'gcb', function()
     return M.operator() .. '_'
   end, { expr = true, desc = 'Toggle block comment line' })
-
-  vim.keymap.set('x', 'gcb', function()
-    return M.operator()
-  end, { expr = true, desc = 'Toggle block comment' })
 end
 
 return M
